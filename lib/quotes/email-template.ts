@@ -11,7 +11,7 @@ export const EMAIL_TOKENS = [
   { token: "market", label: "Market" },
   { token: "project", label: "Project" },
   { token: "subcon", label: "Subcon" },
-  { token: "fuze_id", label: "Fuze ID" },
+  { token: "fuze_id", label: "Project ID" },
   { token: "service_rate", label: "Service rate" },
   { token: "product_service", label: "Product / Service" },
   { token: "send_date", label: "Send date (MM/DD/YYYY)" },

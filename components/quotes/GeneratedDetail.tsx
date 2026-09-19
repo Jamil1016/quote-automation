@@ -70,7 +70,7 @@ export function GeneratedDetail({
         <Chip label="Carrier" value={row.carrier} />
         <Chip label="Market" value={row.market} />
         <Chip label="Project" value={row.project} />
-        <Chip label="Fuze ID" value={row.fuze_id} />
+        <Chip label="Project ID" value={row.fuze_id} />
       </div>
 
       <div className="mt-4 border-t border-rule pt-3">

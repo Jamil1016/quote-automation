@@ -29,7 +29,7 @@ const TASK_COLS: { key: keyof AssetTaskRow; label: string }[] = [
   { key: "carrier", label: "Carrier" },
   { key: "market", label: "Market" },
   { key: "project", label: "Scope" },
-  { key: "fuze_id", label: "Fuze ID" },
+  { key: "fuze_id", label: "Project ID" },
 ];
 
 const INV_COLS: { key: keyof SourceInvoiceRow; label: string }[] = [

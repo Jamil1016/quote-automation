@@ -21,7 +21,13 @@ This repository is a sanitized public copy of that internal tool. It runs end to
 end in a **demo mode** with invented data, where nothing is uploaded and nothing
 is sent.
 
-Screenshots: see [`docs/screenshots/`](docs/screenshots/) (none captured yet).
+![The quotation queue in demo mode](docs/screenshots/01-quotation-queue.jpg)
+
+| Scheduling an email | Outbox | Generated PDF |
+|---|---|---|
+| ![Schedule email dialog](docs/screenshots/03-schedule-email.jpg) | ![Outbox](docs/screenshots/04-outbox.jpg) | ![Quote PDF](docs/screenshots/05-quote-pdf.jpg) |
+
+All screenshots are from demo mode, so every company, site and price in them is invented. More in [`docs/screenshots/`](docs/screenshots/).
 
 ## Architecture
 

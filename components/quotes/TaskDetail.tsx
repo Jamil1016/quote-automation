@@ -187,7 +187,7 @@ export function TaskDetail({ row, options, directory, productServiceValues = [],
           <EditableChip taskDid={row.task_did} field="carrier" label="Carrier" value={row.carrier} overridden={row.carrier_overridden} segments={segments} />
           <EditableChip taskDid={row.task_did} field="market"  label="Market"  value={row.market}  overridden={row.market_overridden}  segments={segments} />
           <EditableChip taskDid={row.task_did} field="project" label="Project" value={row.project} overridden={row.project_overridden} segments={segments} />
-          <EditableChip taskDid={row.task_did} field="fuze_id" label="Fuze ID" value={row.fuze_id} overridden={row.fuze_id_overridden} segments={segments} />
+          <EditableChip taskDid={row.task_did} field="fuze_id" label="Project ID" value={row.fuze_id} overridden={row.fuze_id_overridden} segments={segments} />
         </div>
         {row.override_by && (
           <div className="mt-2 text-[10.5px] text-muted-soft">● manually edited by {row.override_by}</div>

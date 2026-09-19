@@ -176,7 +176,7 @@ export function TaskList({
             <Search size={15} strokeWidth={1.9} />
             <input
               className="w-full min-w-0 bg-transparent text-[13px] text-ink outline-none placeholder:text-muted-soft"
-              placeholder="Search sites, carriers, FA#, service…"
+              placeholder="Search sites, carriers, project ID, service…"
               value={query}
               onChange={(e) => onQuery(e.target.value)}
             />

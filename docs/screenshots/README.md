@@ -1,12 +1,12 @@
 # Screenshots
 
-Screenshots of the running demo go in this folder and are referenced from the
-top-level README. None have been captured yet.
+Taken from the app running in demo mode against the seeded Supabase project,
+so every company, site, address and price shown is invented.
 
-Suggested set (taken in demo mode, so every value shown is invented):
-
-- `queue.png`: the worklist with status badges and the detail panel open
-- `bulk-generate.png`: the bulk generate modal mid-run
-- `generated-outbox.png`: generated quotes and the email Outbox
-- `email-builder.png`: the template builder with token pills
-- `quote-pdf.png`: a rendered quote PDF
+| File | Shows |
+|---|---|
+| `01-quotation-queue.jpg` | The worklist: status badges, missing-recipient and needs-review counters, live presence |
+| `02-generated-detail.jpg` | A generated quote with its parsed categories, price and directory recipients |
+| `03-schedule-email.jpg` | Scheduling an email: template with merge fields, resolved recipients, PDF attachment |
+| `04-outbox.jpg` | The Outbox with waiting, failed, sent and cancelled rows |
+| `05-quote-pdf.jpg` | A rendered quote PDF |
