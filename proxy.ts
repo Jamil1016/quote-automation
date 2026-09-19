@@ -7,7 +7,7 @@ import { createServerClient } from "@supabase/ssr";
  *
  * Server Components cannot write cookies, so an access token refreshed during
  * render would be lost and the rotated refresh token reused on the next request.
- * Running `auth.getUser()` here first lets the refreshed cookies be written to
+ * Running `auth.getClaims()` here first lets the refreshed cookies be written to
  * both the forwarded request and the response.
  *
  * This does NOT gate access. Authorization stays where it was: the (app) layout
@@ -32,10 +32,12 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  // Keep this call directly after createServerClient: it is what validates the
-  // JWT and triggers the refresh.
+  // Keep this call directly after createServerClient: it triggers the session
+  // refresh and writes the new cookies. getClaims() verifies the token locally
+  // against the project's signing key, so the proxy adds no Auth-server round
+  // trip; the page-level gate still does the authoritative getUser() check.
   try {
-    await supabase.auth.getUser();
+    await supabase.auth.getClaims();
   } catch {
     // Auth service unreachable: let the request through; the page-level gate decides.
   }
