@@ -1,5 +1,5 @@
-import { RobotLoader } from "@/components/quotes/RobotLoader";
+import { PageLoader } from "@/components/quotes/PageLoader";
 
 export default function Loading() {
-  return <RobotLoader subtitle="Loading the source data…" />;
+  return <PageLoader subtitle="Loading the source data…" />;
 }

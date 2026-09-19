@@ -503,3 +503,21 @@ body {
     transition: none;
   }
 }
+
+/* Page loader (components/quotes/PageLoader.tsx): lines of a quote sheet draw in. */
+.page-loader-line {
+  stroke-dasharray: 32;
+  stroke-dashoffset: 32;
+  animation: page-loader-draw 1.6s ease-in-out infinite;
+}
+.page-loader-line-2 { animation-delay: 0.15s; }
+.page-loader-line-3 { animation-delay: 0.3s; }
+.page-loader-line-4 { animation-delay: 0.45s; }
+@keyframes page-loader-draw {
+  0% { stroke-dashoffset: 32; }
+  45%, 80% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: 32; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-loader-line { animation: none; stroke-dashoffset: 0; }
+}

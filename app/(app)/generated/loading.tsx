@@ -1,5 +1,5 @@
-import { RobotLoader } from "@/components/quotes/RobotLoader";
+import { PageLoader } from "@/components/quotes/PageLoader";
 
 export default function Loading() {
-  return <RobotLoader subtitle="Loading generated quotes…" />;
+  return <PageLoader subtitle="Loading generated quotes…" />;
 }
