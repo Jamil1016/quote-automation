@@ -5,6 +5,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { requireUser } from "@/lib/auth/require-user";
 import { deleteDriveFile } from "@/lib/google/drive";
 import { normalizeLineItems } from "./quote-model";
+import { mergeOverride } from "./override-merge";
 import type { QuoteLineItem } from "./types";
 
 const FIELDS = ["subcon", "gc", "carrier", "market", "project", "fuze_id"] as const;
@@ -25,6 +26,22 @@ async function existingRow(svc: ReturnType<typeof createServiceClient>, taskDid:
 }
 
 /**
+ * Read-modify-write one override row: start from the stored row (or defaults),
+ * apply `patch`, stamp updated_by/updated_at, upsert. Every setter goes through
+ * here so a change to one field can never wipe its siblings.
+ */
+async function patchOverride(taskDid: string, email: string, patch: Record<string, unknown>) {
+  const svc = createServiceClient();
+  const ex = (await existingRow(svc, taskDid)) as Record<string, unknown>;
+  const merged = mergeOverride(taskDid, ex, patch, email, new Date().toISOString());
+  const { error } = await svc
+    .schema("app_quote")
+    .from("overrides")
+    .upsert(merged, { onConflict: "task_did" });
+  if (error) throw new Error(error.message);
+}
+
+/**
  * Set/clear one category override.
  * value null -> clear (auto-parse), "" -> explicit blank, "..." -> chosen value.
  */
@@ -33,34 +50,7 @@ export async function setOverride(taskDid: string, field: string, value: string 
   if (!taskDid) throw new Error("Missing task");
   if (!FIELDS.includes(field as Field)) throw new Error(`Invalid field: ${field}`);
 
-  const svc = createServiceClient();
-  const ex = (await existingRow(svc, taskDid)) as Record<string, unknown>;
-
-  const merged: Record<string, unknown> = {
-    task_did: taskDid,
-    subcon: ex.subcon ?? null,
-    gc: ex.gc ?? null,
-    carrier: ex.carrier ?? null,
-    market: ex.market ?? null,
-    project: ex.project ?? null,
-    fuze_id: ex.fuze_id ?? null,
-    verified: ex.verified ?? false,
-    verified_by: ex.verified_by ?? null,
-    verified_at: ex.verified_at ?? null,
-    chosen_line_key: ex.chosen_line_key ?? null,
-    service_rate_override: ex.service_rate_override ?? null,
-    product_service_override: ex.product_service_override ?? null,
-    line_items: ex.line_items ?? null,
-    [field]: value,
-    updated_by: email,
-    updated_at: new Date().toISOString(),
-  };
-
-  const { error } = await svc
-    .schema("app_quote")
-    .from("overrides")
-    .upsert(merged, { onConflict: "task_did" });
-  if (error) throw new Error(error.message);
+  await patchOverride(taskDid, email, { [field]: value });
 
   revalidatePath("/");
 }
@@ -70,33 +60,11 @@ export async function setVerified(taskDid: string, verified: boolean) {
   const email = await requireUser();
   if (!taskDid) throw new Error("Missing task");
 
-  const svc = createServiceClient();
-  const ex = (await existingRow(svc, taskDid)) as Record<string, unknown>;
-
-  const merged: Record<string, unknown> = {
-    task_did: taskDid,
-    subcon: ex.subcon ?? null,
-    gc: ex.gc ?? null,
-    carrier: ex.carrier ?? null,
-    market: ex.market ?? null,
-    project: ex.project ?? null,
-    fuze_id: ex.fuze_id ?? null,
+  await patchOverride(taskDid, email, {
     verified,
     verified_by: verified ? email : null,
     verified_at: verified ? new Date().toISOString() : null,
-    chosen_line_key: ex.chosen_line_key ?? null,
-    service_rate_override: ex.service_rate_override ?? null,
-    product_service_override: ex.product_service_override ?? null,
-    line_items: ex.line_items ?? null,
-    updated_by: email,
-    updated_at: new Date().toISOString(),
-  };
-
-  const { error } = await svc
-    .schema("app_quote")
-    .from("overrides")
-    .upsert(merged, { onConflict: "task_did" });
-  if (error) throw new Error(error.message);
+  });
 
   revalidatePath("/");
 }
@@ -154,28 +122,7 @@ export async function setServiceRate(taskDid: string, rate: string | null) {
   if (!taskDid) throw new Error("Missing task");
   const clean = rate == null ? null : (rate.replace(/[^0-9.]/g, "") || null);
 
-  const svc = createServiceClient();
-  const ex = (await existingRow(svc, taskDid)) as Record<string, unknown>;
-  const merged: Record<string, unknown> = {
-    task_did: taskDid,
-    subcon: ex.subcon ?? null,
-    gc: ex.gc ?? null,
-    carrier: ex.carrier ?? null,
-    market: ex.market ?? null,
-    project: ex.project ?? null,
-    fuze_id: ex.fuze_id ?? null,
-    verified: ex.verified ?? false,
-    verified_by: ex.verified_by ?? null,
-    verified_at: ex.verified_at ?? null,
-    chosen_line_key: ex.chosen_line_key ?? null,
-    service_rate_override: clean,
-    product_service_override: ex.product_service_override ?? null,
-    line_items: ex.line_items ?? null,
-    updated_by: email,
-    updated_at: new Date().toISOString(),
-  };
-  const { error } = await svc.schema("app_quote").from("overrides").upsert(merged, { onConflict: "task_did" });
-  if (error) throw new Error(error.message);
+  await patchOverride(taskDid, email, { service_rate_override: clean });
   revalidatePath("/");
 }
 
@@ -188,28 +135,7 @@ export async function setProductService(taskDid: string, value: string | null) {
   if (!taskDid) throw new Error("Missing task");
   const clean = value == null ? null : (value.trim() || null);
 
-  const svc = createServiceClient();
-  const ex = (await existingRow(svc, taskDid)) as Record<string, unknown>;
-  const merged: Record<string, unknown> = {
-    task_did: taskDid,
-    subcon: ex.subcon ?? null,
-    gc: ex.gc ?? null,
-    carrier: ex.carrier ?? null,
-    market: ex.market ?? null,
-    project: ex.project ?? null,
-    fuze_id: ex.fuze_id ?? null,
-    verified: ex.verified ?? false,
-    verified_by: ex.verified_by ?? null,
-    verified_at: ex.verified_at ?? null,
-    chosen_line_key: ex.chosen_line_key ?? null,
-    service_rate_override: ex.service_rate_override ?? null,
-    product_service_override: clean,
-    line_items: ex.line_items ?? null,
-    updated_by: email,
-    updated_at: new Date().toISOString(),
-  };
-  const { error } = await svc.schema("app_quote").from("overrides").upsert(merged, { onConflict: "task_did" });
-  if (error) throw new Error(error.message);
+  await patchOverride(taskDid, email, { product_service_override: clean });
   revalidatePath("/");
 }
 
@@ -269,33 +195,7 @@ export async function setChosenInvoice(taskDid: string, lineKey: string | null) 
   const email = await requireUser();
   if (!taskDid) throw new Error("Missing task");
 
-  const svc = createServiceClient();
-  const ex = (await existingRow(svc, taskDid)) as Record<string, unknown>;
-
-  const merged: Record<string, unknown> = {
-    task_did: taskDid,
-    subcon: ex.subcon ?? null,
-    gc: ex.gc ?? null,
-    carrier: ex.carrier ?? null,
-    market: ex.market ?? null,
-    project: ex.project ?? null,
-    fuze_id: ex.fuze_id ?? null,
-    verified: ex.verified ?? false,
-    verified_by: ex.verified_by ?? null,
-    verified_at: ex.verified_at ?? null,
-    chosen_line_key: lineKey,
-    service_rate_override: ex.service_rate_override ?? null,
-    product_service_override: ex.product_service_override ?? null,
-    line_items: ex.line_items ?? null,
-    updated_by: email,
-    updated_at: new Date().toISOString(),
-  };
-
-  const { error } = await svc
-    .schema("app_quote")
-    .from("overrides")
-    .upsert(merged, { onConflict: "task_did" });
-  if (error) throw new Error(error.message);
+  await patchOverride(taskDid, email, { chosen_line_key: lineKey });
 
   revalidatePath("/");
 }
@@ -309,27 +209,6 @@ export async function setLineItems(taskDid: string, items: QuoteLineItem[] | nul
   if (!taskDid) throw new Error("Missing task");
   const clean = normalizeLineItems(items);
 
-  const svc = createServiceClient();
-  const ex = (await existingRow(svc, taskDid)) as Record<string, unknown>;
-  const merged: Record<string, unknown> = {
-    task_did: taskDid,
-    subcon: ex.subcon ?? null,
-    gc: ex.gc ?? null,
-    carrier: ex.carrier ?? null,
-    market: ex.market ?? null,
-    project: ex.project ?? null,
-    fuze_id: ex.fuze_id ?? null,
-    verified: ex.verified ?? false,
-    verified_by: ex.verified_by ?? null,
-    verified_at: ex.verified_at ?? null,
-    chosen_line_key: ex.chosen_line_key ?? null,
-    service_rate_override: ex.service_rate_override ?? null,
-    product_service_override: ex.product_service_override ?? null,
-    line_items: clean,
-    updated_by: email,
-    updated_at: new Date().toISOString(),
-  };
-  const { error } = await svc.schema("app_quote").from("overrides").upsert(merged, { onConflict: "task_did" });
-  if (error) throw new Error(error.message);
+  await patchOverride(taskDid, email, { line_items: clean });
   revalidatePath("/");
 }
