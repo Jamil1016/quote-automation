@@ -257,6 +257,6 @@ begin
 end;
 $fn$;
 
-revoke all on function demo.load_seed() from public;
+revoke all on function demo.load_seed() from public, anon, authenticated;
 
 select demo.load_seed();

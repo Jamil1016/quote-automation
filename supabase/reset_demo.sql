@@ -9,7 +9,7 @@
 -- Nightly (Supabase): enable the pg_cron extension (Dashboard -> Database ->
 -- Extensions -> pg_cron), then run ONCE:
 --
---   select cron.schedule('reset-quote-demo', '0 7 * * *', $$select demo.reset_demo();$$);
+--   select cron.schedule('reset-quote-demo', '0 19 * * *', $$select demo.reset_demo();$$);
 --
 -- To stop it:  select cron.unschedule('reset-quote-demo');
 --
@@ -32,6 +32,6 @@ begin
 end;
 $fn$;
 
-revoke all on function demo.reset_demo() from public;
+revoke all on function demo.reset_demo() from public, anon, authenticated;
 
 select demo.reset_demo();
