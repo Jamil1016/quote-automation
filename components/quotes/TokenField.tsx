@@ -59,7 +59,7 @@ export const TokenField = forwardRef<TokenFieldHandle, {
   // Reload external value (e.g. switching templates) without clobbering live edits.
   useEffect(() => {
     if (editor && value !== serializeToText(editor.getHTML())) editor.commands.setContent(tokenizeText(value));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [value, editor]);
 
   return <EditorContent editor={editor} />;

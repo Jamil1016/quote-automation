@@ -89,8 +89,11 @@ export const EmailComposer = forwardRef<EmailComposerHandle, {
   });
 
   // Keep editorRef in sync so insertImageFile can always reach the editor instance.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (editorRef as any).current = editor;
+  // (In an effect: refs must not be written during render.)
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (editorRef as any).current = editor;
+  }, [editor]);
 
   async function insertImageFile(file: File) {
     try {
@@ -111,7 +114,7 @@ export const EmailComposer = forwardRef<EmailComposerHandle, {
   // the canonical {{token}} form so token pills don't trigger a redundant reset+caret jump.
   useEffect(() => {
     if (editor && value !== serializeHtml(editor.getHTML())) editor.commands.setContent(tokenizeHtml(value));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [value, editor]);
 
   if (!editor) return fill

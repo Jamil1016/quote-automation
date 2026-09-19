@@ -121,6 +121,7 @@ export function QueueClient({ data, directory }: { data: QuoteData; directory: D
 
   useEffect(() => {
     const saved = Number(localStorage.getItem(SPLIT_KEY));
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time read of browser-only state after mount; a lazy initializer would mismatch the server render
     if (saved) { const c = clampBasis(saved); setBasis(c); basisRef.current = c; }
   }, []);
 
@@ -168,6 +169,7 @@ export function QueueClient({ data, directory }: { data: QuoteData; directory: D
 
   // Render the data-freshness line into the shared header's nav row.
   const [freshnessSlot, setFreshnessSlot] = useState<HTMLElement | null>(null);
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- the portal target only exists in the browser, after mount
   useEffect(() => { setFreshnessSlot(document.getElementById("header-freshness")); }, []);
   const freshness = (
     <span>

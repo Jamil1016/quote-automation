@@ -1,5 +1,6 @@
 // components/quotes/extensions/Indent.ts
 import { Extension } from "@tiptap/core";
+import type { Node as PMNode } from "@tiptap/pm/model";
 import { INDENT_STEP_PX } from "@/lib/quotes/email-style";
 
 const MAX_LEVEL = 8;
@@ -46,7 +47,7 @@ export const Indent = Extension.create({
       ({ tr, state, dispatch }: any) => {
         const { from, to } = state.selection;
         let changed = false;
-        state.doc.nodesBetween(from, to, (node: any, pos: number) => {
+        state.doc.nodesBetween(from, to, (node: PMNode, pos: number) => {
           if (this.options.types.includes(node.type.name)) {
             const cur = node.attrs.indent || 0;
             const next = Math.min(MAX_LEVEL, Math.max(0, cur + delta));

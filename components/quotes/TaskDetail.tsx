@@ -37,7 +37,8 @@ function SowField({ value }: { value: string | null }) {
   const [expanded, setExpanded] = useState(false);
   const [overflowing, setOverflowing] = useState(false);
   const expandedRef = useRef(false);
-  expandedRef.current = expanded;
+  // Mirror `expanded` for the ResizeObserver callback (refs must not be written during render).
+  useEffect(() => { expandedRef.current = expanded; }, [expanded]);
 
   useEffect(() => {
     const el = ref.current;
@@ -249,7 +250,7 @@ export function TaskDetail({ row, options, directory, productServiceValues = [],
                 </div>
                 <SowField key={taskDid} value={row.inv_sow} />
               </div>
-              <div className="mt-2 font-mono text-[10px] text-muted-soft">Swift form: {row.inv_form_did ?? "—"}</div>
+              <div className="mt-2 font-mono text-[10px] text-muted-soft">PM form: {row.inv_form_did ?? "—"}</div>
 
               {row.priced_line_count > 1 && options.length > 1 && (
                 <div className="mt-4 border-t border-rule pt-3">

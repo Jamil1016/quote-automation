@@ -28,6 +28,7 @@ export function ResizableImageView({ node, updateAttributes, selected }: NodeVie
   const width = node.attrs.width as number | null;
   return (
     <NodeViewWrapper className="relative inline-block" style={{ lineHeight: 0 }} data-drag-handle>
+      {/* eslint-disable-next-line @next/next/no-img-element -- editor content: data: URLs and arbitrary pasted images, next/image cannot serve these */}
       <img
         ref={imgRef}
         src={node.attrs.src}

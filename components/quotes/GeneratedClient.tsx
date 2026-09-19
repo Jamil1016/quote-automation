@@ -9,7 +9,6 @@ import { returnToQueue, returnManyToQueue } from "@/lib/quotes/actions";
 import { revalidateQuotes } from "@/lib/quotes/revalidate-actions";
 import { setActiveFrom } from "@/lib/quotes/settings-actions";
 import { StatusBadge } from "./StatusBadge";
-import { EmailChips } from "./EmailChips";
 import { BulkGenerateModal } from "./BulkGenerateModal";
 import { GeneratedDetail } from "./GeneratedDetail";
 import { ScheduleEmailModal, type SchedulePayload } from "./ScheduleEmailModal";
@@ -290,7 +289,7 @@ export function GeneratedClient({ rows, driveFolderId, templates, queue, gmailEm
           rows={regenRows}
           onClose={() => setRegenRows(null)}
           onDeselect={(dids) => setBulk((s) => { const n = new Set(s); dids.forEach((d) => n.delete(d)); return n; })}
-          onGenerated={(_dids) => { setBulk(new Set()); revalidateQuotes().then(() => router.refresh()); }}
+          onGenerated={() => { setBulk(new Set()); revalidateQuotes().then(() => router.refresh()); }}
         />
       )}
       {emailRows && (

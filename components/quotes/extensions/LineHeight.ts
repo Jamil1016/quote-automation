@@ -1,5 +1,6 @@
 // components/quotes/extensions/LineHeight.ts
 import { Extension } from "@tiptap/core";
+import type { Node as PMNode } from "@tiptap/pm/model";
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
@@ -41,7 +42,7 @@ export const LineHeight = Extension.create({
         ({ tr, state, dispatch }: any) => {
           const { from, to } = state.selection;
           let changed = false;
-          state.doc.nodesBetween(from, to, (node: any, pos: number) => {
+          state.doc.nodesBetween(from, to, (node: PMNode, pos: number) => {
             if (this.options.types.includes(node.type.name)) {
               tr.setNodeMarkup(pos, undefined, { ...node.attrs, lineHeight: value });
               changed = true;

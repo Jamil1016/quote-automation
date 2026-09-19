@@ -108,7 +108,7 @@ export function ColumnFilterHeader<T>({
       window.removeEventListener("scroll", onScrollResize, true);
       window.removeEventListener("resize", onScrollResize);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [open]);
 
   useEffect(() => {
