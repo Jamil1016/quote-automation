@@ -1,19 +1,21 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 /**
- * Service-role Supabase client. BYPASSES RLS.
+ * Service-role Supabase client. BYPASSES RLS. Server-only.
  *
- * ONLY use for:
- *   - Cron jobs (`scripts/refresh-data-freshness.ts`)
- *   - Admin-only operations that explicitly need to write `agent.*` tables
- *     on behalf of a user whose role allows it
- *   - User provisioning (creating `agent.users` rows from `/admin`)
+ * This app does ALL of its database reads and writes through this client.
+ * The trust boundary is therefore in application code, not in RLS policies:
  *
- * NEVER use to answer a user's chat question — those go through the user's
- * JWT'd server client so RLS at the database remains the trust boundary.
+ *   - every page sits behind the (app) layout gate (signed in + allowlisted), and
+ *   - every Server Action / Route Handler calls `requireUser()` first (or, for
+ *     the queue dispatcher, checks a shared secret) before touching this client.
  *
- * If you find yourself reaching for this from a route handler that serves a
- * user, stop and write the RLS policy instead.
+ * The database side is locked down to match (supabase/schema.sql): RLS is
+ * enabled on every table with no policies, and nothing is granted to `anon` or
+ * `authenticated`, so the browser's anon key cannot read any of it.
+ *
+ * Rules: never import this from a Client Component, and never call it from a
+ * handler that has not authenticated the caller.
  */
 export function createServiceClient() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;

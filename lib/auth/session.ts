@@ -52,8 +52,10 @@ export async function getSession(): Promise<AppSession | null> {
   const { data: { user: authUser } } = await supabase.auth.getUser();
   if (!authUser) return null;
 
-  // NOTE: requires the `agent` schema to be exposed via Supabase API settings.
-  // Dashboard → Settings → API → Exposed schemas → add `agent`.
+  // OPTIONAL: a profile row (display name, role) from an `agent.users` table that
+  // exists only in the internal deployment. The public schema does not create it;
+  // the query then returns an error, `portalUser` is null, and the UI falls back
+  // to the email address. Nothing else depends on it.
   const { data: portalUser } = await supabase
     .schema("agent")
     .from("users")
@@ -92,15 +94,4 @@ export async function getSession(): Promise<AppSession | null> {
       data_scope: portalUser.data_scope ?? {},
     },
   };
-}
-
-/**
- * Check whether the current user has access to a given data domain.
- * Mirrors the Postgres helper `agent.current_user_can_see(domain text)`.
- */
-export function canSee(portalUser: PortalUser | null, domain: DataScopeDomain): boolean {
-  if (!portalUser?.is_active) return false;
-  if (portalUser.is_superuser) return true;
-  const domains = portalUser.data_scope.domains ?? [];
-  return domains.includes("all") || domains.includes(domain);
 }

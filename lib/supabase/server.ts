@@ -2,12 +2,12 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 /**
- * Server-side Supabase client for Server Components, Route Handlers, and
- * Server Actions.
+ * Cookie-bound Supabase client for Server Components, Route Handlers, and
+ * Server Actions. Runs as the signed-in user (their JWT, read from cookies).
  *
- * RLS context: authenticated user's JWT (read from cookies). This is the
- * client every read in the app must use — RLS at the database is our trust
- * boundary. Never use the service-role client to satisfy a user request.
+ * In this app it is used for AUTH ONLY: `auth.getUser()`, sign-in, sign-out and
+ * the OAuth code exchange. Data access goes through the service-role client
+ * (lib/supabase/service.ts) after `requireUser()` has checked the caller.
  */
 export async function createClient() {
   const cookieStore = await cookies();
@@ -25,8 +25,8 @@ export async function createClient() {
               cookieStore.set(name, value, options)
             );
           } catch {
-            // Server Components cannot set cookies; the middleware refreshes
-            // the session, so this is safe to swallow here.
+            // Server Components cannot set cookies. Safe to swallow: proxy.ts
+            // refreshes the session cookie on every request before render.
           }
         },
       },
