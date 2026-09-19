@@ -21,6 +21,8 @@ This repository is a sanitized public copy of that internal tool. It runs end to
 end in a **demo mode** with invented data, where nothing is uploaded and nothing
 is sent.
 
+**Live demo: https://quote-automation-demo.vercel.app** (click **Enter demo**; no account needed). It runs on invented data, sends nothing, and resets every night.
+
 ![The quotation queue in demo mode](docs/screenshots/01-quotation-queue.jpg)
 
 | Scheduling an email | Outbox | Generated PDF |
