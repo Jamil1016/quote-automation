@@ -1,0 +1,505 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────
+   Design tokens — "Field Journal" aesthetic
+   ───────────────────────────────────────────────────────────── */
+:root {
+  /* ── "Ledger" aesthetic — warm editorial parchment + gold ──
+     Re-mapped from the original cobalt "Field Journal" tokens so existing
+     utility classes (bg-paper, text-ink, border-rule, bg-signal…) shift to
+     the new palette automatically. */
+
+  /* Surface */
+  --paper: #f4efe6;          /* parchment ground */
+  --paper-deep: #ece4d4;     /* recessed surface / insets */
+  --card: #fbf8f2;           /* raised card surface (lighter than ground) */
+  --card-2: #f7f2e8;         /* card alt / hover */
+  --rule: #e3dcce;           /* hairline lines & dividers */
+  --rule-strong: #cfc5b1;
+  --row-bulk-bg: #e8dabd;    /* bulk-selected row tint (warm tan) */
+  --row-bulk-bar: #6f4e1f;   /* bulk-selected row accent bar (brown) */
+
+  /* Ink */
+  --ink: #211c14;            /* primary text — warm near-black */
+  --ink-soft: #4a4334;
+  --muted: #7c7460;          /* secondary text */
+  --muted-soft: #a59c86;
+
+  /* Signal — interactive accent (deep ink-blue) */
+  --signal: #14457a;
+  --signal-deep: #0e3a66;
+  --signal-wash: #e4ecf5;    /* hover / chip backgrounds */
+
+  /* Semantic accents */
+  --ember: #a8442a;          /* rust — alert / no-match */
+  --moss: #3c6b3a;           /* positive / ready */
+  --amber: #a8741a;          /* gold caution (alias of --gold) */
+  --gold: #a8741a;           /* the Ledger accent */
+  --gold-wash: #f3e6cd;
+  --idle: #c9821e;           /* presence: idle status dot */
+
+  /* Form/surface + status washes (routed through tokens so the dark theme can remap
+     them; Ledger values match the previous hardcoded colors so Ledger is unchanged). */
+  --input: #ffffff;          /* form field background */
+  --ember-wash: #fdeaea;     /* alert / no-match row + pill background */
+  --moss-wash: #e6efe0;      /* positive / ready background */
+  --amber-wash: #fdf1e0;     /* caution background */
+
+  /* Type — Plus Jakarta Sans everywhere (both themes); mono kept for tabular/kbd */
+  --font-display: var(--font-jakarta);
+  --font-body: var(--font-jakarta);
+  --font-mono: var(--font-spline-mono);
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-deep: var(--paper-deep);
+  --color-card: var(--card);
+  --color-card-2: var(--card-2);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-muted: var(--muted);
+  --color-muted-soft: var(--muted-soft);
+  --color-signal: var(--signal);
+  --color-signal-deep: var(--signal-deep);
+  --color-signal-wash: var(--signal-wash);
+  --color-ember: var(--ember);
+  --color-moss: var(--moss);
+  --color-amber: var(--amber);
+  --color-gold: var(--gold);
+  --color-gold-wash: var(--gold-wash);
+  --color-idle: var(--idle);
+  --color-input: var(--input);
+  --color-ember-wash: var(--ember-wash);
+  --color-moss-wash: var(--moss-wash);
+  --color-amber-wash: var(--amber-wash);
+
+  --font-display: var(--font-jakarta);
+  --font-sans: var(--font-jakarta);
+  --font-mono: var(--font-spline-mono);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Example Co theme — dark navy + cyan, Plus Jakarta Sans.
+   Selectable, additional theme (Ledger stays the default). Overrides the
+   SAME semantic tokens so every utility (bg-paper, text-ink, bg-signal…)
+   reskins automatically; scoped to [data-theme="brand"] on the app shell.
+   Source: reference/brand-design-system (colors_and_type.css + preview/*).
+   ───────────────────────────────────────────────────────────── */
+[data-theme="brand"] {
+  /* Surfaces */
+  --paper: #1e2740;
+  --paper-deep: #242e49;
+  --card: #212b45;
+  --card-2: #283356;
+  --rule: rgba(255, 255, 255, 0.08);
+  --rule-strong: rgba(255, 255, 255, 0.15);
+  --row-bulk-bg: rgba(0, 188, 212, 0.10);
+  --row-bulk-bar: #00bcd4;
+
+  /* Ink (text on dark) */
+  --ink: #ffffff;
+  --ink-soft: rgba(255, 255, 255, 0.70);
+  --muted: rgba(255, 255, 255, 0.50);
+  --muted-soft: rgba(255, 255, 255, 0.30);
+
+  /* Accent — single cyan (replaces both signal blue and ledger gold) */
+  --signal: #00bcd4;
+  --signal-deep: #26c6da;
+  --signal-wash: rgba(0, 188, 212, 0.14);
+  --gold: #00bcd4;
+  --amber: #fbbf24;          /* caution stays amber, distinct from the cyan accent */
+  --gold-wash: rgba(0, 188, 212, 0.14);
+
+  /* Semantic accents tuned for dark */
+  --ember: #f87171;
+  --moss: #34d399;
+  --idle: #fbbf24;
+
+  /* Form/surface + status washes */
+  --input: #1e2740;
+  --ember-wash: rgba(248, 113, 113, 0.15);
+  --moss-wash: rgba(52, 211, 153, 0.15);
+  --amber-wash: rgba(251, 191, 36, 0.15);
+
+  /* Type — one typeface everywhere; keep a mono for tabular/kbd */
+  --font-display: var(--font-jakarta);
+  --font-body: var(--font-jakarta);
+
+  /* Example Co radii + shadows (used by the restyled primitives below) */
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --r-2xl: 20px;
+  --r-pill: 999px;
+  --shadow-accent: 0 8px 24px rgba(0, 188, 212, 0.3);
+  --shadow-img: 0 24px 64px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* @theme inline maps --font-sans to Spline; remap the body font under Example Co. */
+[data-theme="brand"],
+[data-theme="brand"] body {
+  --font-sans: var(--font-jakarta);
+}
+
+/* Display text in Example Co: Jakarta extra-bold + tight tracking (no Fraunces axes). */
+[data-theme="brand"] .font-display {
+  font-family: var(--font-jakarta), system-ui, sans-serif;
+  font-variation-settings: normal;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+/* Eyebrow → cyan, per Example Co .t-eyebrow */
+[data-theme="brand"] .eyebrow {
+  color: var(--signal);
+  letter-spacing: 0.14em;
+}
+
+/* Selection + focus ring → cyan */
+[data-theme="brand"] ::selection { background: #00bcd4; color: #1e2740; }
+[data-theme="brand"] *:focus-visible { outline: 2px solid #00bcd4; outline-offset: 3px; }
+
+/* Buttons — primary cyan with glow; ghost transparent w/ white-alpha border */
+[data-theme="brand"] .btn-signal {
+  background: var(--signal);
+  color: #ffffff;
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-accent);
+}
+[data-theme="brand"] .btn-signal:hover {
+  background: var(--signal-deep);
+  box-shadow: var(--shadow-accent);
+}
+[data-theme="brand"] .btn-ghost {
+  background: transparent;
+  color: #ffffff;
+  border-color: var(--rule-strong);
+}
+[data-theme="brand"] .btn-ghost:hover {
+  background: transparent;
+  border-color: var(--signal);
+  color: var(--signal);
+}
+
+/* Inputs — navy field, cyan focus ring (per Example Co form spec) */
+[data-theme="brand"] input,
+[data-theme="brand"] select,
+[data-theme="brand"] textarea {
+  background: var(--input);
+  color: var(--ink);
+}
+[data-theme="brand"] input::placeholder,
+[data-theme="brand"] textarea::placeholder { color: var(--muted-soft); }
+[data-theme="brand"] input:focus,
+[data-theme="brand"] select:focus,
+[data-theme="brand"] textarea:focus {
+  border-color: var(--signal);
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.08);
+  outline: none;
+}
+[data-theme="brand"] .composer { background: var(--input); }
+[data-theme="brand"] .composer:focus-within {
+  border-color: var(--signal);
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.08);
+}
+
+/* Cards / tiles — flat navy, border only, lift on hover (no heavy shadow) */
+[data-theme="brand"] .tile {
+  background: var(--card);
+  border-color: var(--rule);
+  border-radius: var(--r-xl);
+}
+[data-theme="brand"] .tile:hover {
+  border-color: var(--rule-strong);
+  box-shadow: none;
+  transform: translateY(-3px);
+}
+[data-theme="brand"] .tile::after {
+  border-top-color: var(--signal);
+  border-right-color: var(--signal);
+}
+
+/* Token pills → cyan */
+[data-theme="brand"] .token-chip {
+  background: var(--signal-wash);
+  color: var(--signal);
+  border-color: color-mix(in oklab, var(--signal) 35%, transparent);
+}
+
+/* kbd + hairline on dark */
+[data-theme="brand"] .kbd { background: var(--paper-deep); }
+[data-theme="brand"] .hairline { background: var(--rule-strong); }
+
+/* The brand logo PNG is dark line-art; invert it to white on the dark theme (e.g. sign-in). */
+[data-theme="brand"] .brand-logo { filter: brightness(0) invert(1); }
+
+/* ─────────────────────────────────────────────────────────────
+   Base
+   ───────────────────────────────────────────────────────────── */
+html,
+body {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+body {
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11", "tnum" 1;  /* tabular numerals on */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Display serif utilities */
+.font-display {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+/* Eyebrow — the all-caps tiny label that appears above sections */
+.eyebrow {
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Hairline rule above section heads */
+.hairline {
+  height: 1px;
+  background: var(--rule-strong);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   First-load staggered entrance
+   ───────────────────────────────────────────────────────────── */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rise {
+  opacity: 0;
+  animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.1, 1) forwards;
+}
+
+.rise-delay-1 { animation-delay: 0.05s; }
+.rise-delay-2 { animation-delay: 0.18s; }
+.rise-delay-3 { animation-delay: 0.34s; }
+.rise-delay-4 { animation-delay: 0.5s; }
+.rise-delay-5 { animation-delay: 0.66s; }
+
+/* ─────────────────────────────────────────────────────────────
+   Composer focus bloom
+   ───────────────────────────────────────────────────────────── */
+.composer {
+  background: var(--paper);
+  border: 1px solid var(--rule-strong);
+  transition: border-color 200ms ease, box-shadow 220ms ease, transform 220ms ease;
+}
+
+.composer:focus-within {
+  border-color: var(--signal);
+  box-shadow:
+    0 0 0 4px color-mix(in oklab, var(--signal) 12%, transparent),
+    0 8px 30px -16px color-mix(in oklab, var(--signal) 40%, transparent);
+}
+
+/* Available {{field}} tokens rendered as gold pills inside the editors. They are atom
+   nodes showing the field's label (no braces); the stored HTML keeps the literal
+   {{token}} (see token-html.ts). Unknown tokens stay plain text. */
+.token-chip {
+  display: inline-block;
+  background: var(--gold-wash);
+  color: var(--gold);
+  border: 1px solid color-mix(in oklab, var(--gold) 35%, transparent);
+  border-radius: 6px;
+  padding: 0 6px;
+  margin: 0 1px;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 0.85em;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+  vertical-align: baseline;
+  cursor: default;
+  user-select: none;
+}
+.token-chip.ProseMirror-selectednode {
+  outline: 2px solid color-mix(in oklab, var(--gold) 55%, transparent);
+  outline-offset: 1px;
+}
+
+/* Caret blink */
+@keyframes caret-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* Loading dots for the chat thinking indicator */
+@keyframes dot-pulse {
+  0%, 60%, 100% { opacity: 0.3; transform: scale(1); }
+  30%           { opacity: 1;   transform: scale(1.3); }
+}
+
+.caret::after {
+  content: "";
+  display: inline-block;
+  width: 1px;
+  height: 1.05em;
+  margin-left: 2px;
+  vertical-align: -0.18em;
+  background: currentColor;
+  animation: caret-blink 1.05s steps(1) infinite;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Suite tile — newspaper card with corner crosshair on hover
+   ───────────────────────────────────────────────────────────── */
+.tile {
+  position: relative;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  transition: transform 240ms cubic-bezier(0.2, 0.7, 0.1, 1),
+              border-color 240ms ease,
+              box-shadow 240ms ease;
+}
+
+.tile:hover {
+  transform: translateY(-2px);
+  border-color: var(--ink-soft);
+  box-shadow: 0 14px 30px -22px rgba(11, 15, 26, 0.45);
+}
+
+/* Corner crosshair (top-right) — only on hover */
+.tile::after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  border-top: 1px solid var(--ink);
+  border-right: 1px solid var(--ink);
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+
+.tile:hover::after {
+  opacity: 1;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Topographic field — used as background behind hero
+   ───────────────────────────────────────────────────────────── */
+.topo-mask {
+  -webkit-mask-image: radial-gradient(ellipse 70% 65% at 60% 35%, black 35%, transparent 78%);
+          mask-image: radial-gradient(ellipse 70% 65% at 60% 35%, black 35%, transparent 78%);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Buttons
+   ───────────────────────────────────────────────────────────── */
+.btn-signal {
+  background: var(--signal);
+  color: white;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  transition: background-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.btn-signal:hover {
+  background: var(--signal-deep);
+  box-shadow: 0 8px 20px -10px color-mix(in oklab, var(--signal) 60%, transparent);
+}
+
+.btn-signal:active {
+  transform: translateY(1px);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--rule-strong);
+  transition: background-color 180ms ease, border-color 180ms ease;
+}
+
+.btn-ghost:hover {
+  background: var(--paper-deep);
+  border-color: var(--ink-soft);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Search palette trigger ("⌘K" pill)
+   ───────────────────────────────────────────────────────────── */
+.kbd {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  padding: 2px 5px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 4px;
+  color: var(--muted);
+  background: var(--paper);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Live dot — a single ember pulse, used very sparingly
+   ───────────────────────────────────────────────────────────── */
+@keyframes pulse-ember {
+  0%, 100% { transform: scale(1);   opacity: 1; }
+  50%      { transform: scale(1.4); opacity: 0.55; }
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--ember);
+  display: inline-block;
+  animation: pulse-ember 1.9s ease-in-out infinite;
+}
+
+/* Presence — a soft moss ring pulse on the "active now" indicator */
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 color-mix(in oklab, var(--moss) 50%, transparent); }
+  70%  { box-shadow: 0 0 0 7px color-mix(in oklab, var(--moss) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--moss) 0%, transparent); }
+}
+.presence-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--moss);
+  display: inline-block;
+  animation: pulse-ring 2.4s ease-out infinite;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Honor reduced motion
+   ───────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .rise,
+  .live-dot,
+  .caret::after {
+    animation: none;
+  }
+  .rise {
+    opacity: 1;
+    transform: none;
+  }
+  .tile {
+    transition: none;
+  }
+}
