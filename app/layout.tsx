@@ -37,6 +37,17 @@ export const metadata: Metadata = {
   },
   description: "Quote Automation, Example Co internal invoicing and quotation tool.",
   icons: { icon: "/favicon.ico" },
+  metadataBase: new URL("https://quote-automation-demo.vercel.app"),
+  // Link previews: /og.png is a static file, so the auth proxy never sees it.
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "Quote Automation demo",
+    title: "Quote Automation: review queue, batch PDFs and email drafts (live demo)",
+    description: "Review a quoting worklist, generate PDFs in bulk and stage email drafts. Invented data; nothing is sent.",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Quotation queue in the demo" }],
+  },
+  twitter: { card: "summary_large_image", images: ["/og.png"] },
 };
 
 export default function RootLayout({
